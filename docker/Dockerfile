@@ -3,7 +3,7 @@ RUN pacman -Syy && pacman -S cmake git --noconfirm
 
 WORKDIR /app
 COPY . .
-RUN cmake --build . --config Release -j
+RUN cmake . && cmake --build . --config Release -j
 
 FROM archlinux:base AS deploy
 
