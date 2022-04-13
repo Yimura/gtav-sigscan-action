@@ -1,2 +1,10 @@
-/build/
-/.vscode/
+build/
+.vscode/
+
+_deps/
+CMakeFiles/
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+
+files/
