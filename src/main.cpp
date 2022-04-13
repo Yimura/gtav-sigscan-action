@@ -69,15 +69,17 @@ uint32_t safe_get_uint(rapidjson::Value &value)
 
 rapidjson::Document download_tunables()
 {
-    cpr::Response r = cpr::Get(cpr::Url{"http://prod.cloud.rockstargames.com/titles/gta5/pcros/0x1a098062.json"});
+    http::Request req("http://prod.cloud.rockstargames.com/titles/gta5/pcros/0x1a098062.json");
+    const auto res = req.send("GET");
+    std::string text = { res.body.begin(), res.body.end() };
 
     uint8_t key[] = { 0xf0, 0x6f, 0x12, 0xf4, 0x9b, 0x84, 0x3d, 0xad, 0xe4, 0xa7, 0xbe, 0x05, 0x35, 0x05, 0xb1, 0x9c, 0x9e, 0x41, 0x5c, 0x95, 0xd9, 0x37, 0x53, 0x45, 0x0a, 0x26, 0x91, 0x44, 0xd5, 0x9a, 0x01, 0x15 };
     AES aes(AESKeyLength::AES_256);
 
-    auto crypted_chunk = r.text.size() - (r.text.size() % 16);
-    auto out = aes.DecryptECB((uint8_t *)r.text.data(), (uint32_t)crypted_chunk, key);
+    auto crypted_chunk = text.size() - (text.size() % 16);
+    auto out = aes.DecryptECB((uint8_t *)text.data(), (uint32_t)crypted_chunk, key);
     std::string j((char *)out, crypted_chunk);
-    j += std::string(r.text.data() + crypted_chunk, (r.text.size() % 16));
+    j += { text.data() + crypted_chunk, (text.size() % 16) };
     delete[] out;
 
     rapidjson::Document d;
@@ -86,21 +88,21 @@ rapidjson::Document download_tunables()
     return d;
 }
 
-void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, std::string filename)
+void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std::string_view filename)
 {
     for (auto &bonus : doc["bonus"].GetArray())
     {
         auto values = bonus.GetArray();
         sig s({safe_get_uint(values[0]), safe_get_uint(values[1]), safe_get_uint(values[2]), safe_get_uint(values[3]), safe_get_uint(values[4])});
         if(s.m_game_version != 2545)
-             continue;
+            continue;
         if (auto location = s.scan(data, size))
         {
             if (is_ascii(location, s.m_size))
-                printf("(%s) \"%.*s\" (%u) (v%d) (%s) (~%.3f kb region)\n", filename.c_str(), s.m_size, location, s.m_size, s.m_game_version, s.m_protect_flag == PAGE_READONLY ? "PAGE_READONLY" : "PAGE_EXECUTE_READWRITE", s.m_region_size_estimate / 1000.0);
+                printf("(%s) \"%.*s\" (%u) (v%d) (%s) (~%.3f kb region)\n", filename.data(), s.m_size, location, s.m_size, s.m_game_version, s.m_protect_flag == PAGE_READONLY ? "PAGE_READONLY" : "PAGE_EXECUTE_READWRITE", s.m_region_size_estimate / 1000.0);
             else
             {
-                printf("(%s) { ", filename.c_str());
+                printf("(%s) { ", filename.data());
                 for (auto i = 0ull; i < s.m_size; i++)
                     printf("%02hhx ", location[i]);
                 printf("} (%u) (v%d) (%s) (~%.3f kb region)\n", s.m_size, s.m_game_version, s.m_protect_flag == PAGE_READONLY ? "PAGE_READONLY" : "PAGE_EXECUTE_READWRITE", s.m_region_size_estimate / 1000.0);
@@ -109,7 +111,7 @@ void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, std::strin
     }
 }
 
-#define ARG_FILE_PATH 1
+constexpr auto ARG_FILE_PATH = 1;
 int main(int argc, const char** argv)
 {
     if (argc < 2)
@@ -117,11 +119,14 @@ int main(int argc, const char** argv)
 
     auto tunables = download_tunables();
     // view_sigs(tunables); // unused?
-    for (const auto &entry : std::filesystem::recursive_directory_iterator(argv[ARG_FILE_PATH]))
-    {
-        std::ifstream i(entry.path(), std::ios::binary);
-        std::vector<uint8_t> contents((std::istreambuf_iterator<char>(i)), std::istreambuf_iterator<char>());
-        loop_bonus(tunables, contents.data(), contents.size(), entry.path().filename().string());
-    }
+
+    const std::filesystem::path file_path = argv[ARG_FILE_PATH];
+    if (!std::filesystem::is_regular_file(file_path))
+        return 1;
+
+    std::ifstream i(file_path, std::ios::binary);
+    std::vector<uint8_t> file_buffer = { std::istreambuf_iterator(i), std::istreambuf_iterator<char>() };
+    loop_bonus(tunables, file_buffer.data(), file_buffer.size(), file_path.filename().string());
+
     return 0;
 }

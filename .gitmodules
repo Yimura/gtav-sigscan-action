@@ -6,3 +6,6 @@
 	path = vendor/AES
 	url = https://github.com/SergeyBel/AES.git
 	ignore = dirty
+[submodule "vendor/httprequest"]
+	path = vendor/httprequest
+	url = https://github.com/elnormous/HTTPRequest.git
