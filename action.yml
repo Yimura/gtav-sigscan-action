@@ -1,0 +1,15 @@
+# action.yml
+name: 'GTA V Sig Scanner Action'
+description: 'This action checks if your build contains bits that are detected by the GTA V sigscanner.'
+inputs:
+  file:
+    description: 'The file to check against GTA V sig database.'
+    required: true
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.who-to-greet }}
