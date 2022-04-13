@@ -1,9 +1,12 @@
 [submodule "vendor/cpr"]
 	path = vendor/cpr
 	url = https://github.com/libcpr/cpr.git
+	ignore = dirty
 [submodule "vendor/rapidjson"]
 	path = vendor/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
+	ignore = dirty
 [submodule "vendor/AES"]
 	path = vendor/AES
 	url = https://github.com/SergeyBel/AES.git
+	ignore = dirty
