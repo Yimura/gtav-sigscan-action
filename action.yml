@@ -6,8 +6,6 @@ inputs:
     description: 'The file to check against GTA V sig database.'
     required: true
 outputs:
-  detected: # id of output
-    description: 'Boolean to check if you're detected...'
 runs:
   using: 'docker'
   image: 'Dockerfile'
