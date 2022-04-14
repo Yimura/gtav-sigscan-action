@@ -9,7 +9,7 @@ uint32_t sig_joaat(uint8_t *input, uint32_t size)
     uint32_t hash = 0x4c11db7;
     for (uint32_t i = 0; i < size; i++)
     {
-        hash += input[i];
+        hash += (char)input[i];
         hash += hash << 10;
         hash ^= hash >> 6;
     }
@@ -94,8 +94,10 @@ void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std:
     {
         auto values = bonus.GetArray();
         sig s({safe_get_uint(values[0]), safe_get_uint(values[1]), safe_get_uint(values[2]), safe_get_uint(values[3]), safe_get_uint(values[4])});
-        if(s.m_game_version != 2545)
-            continue;
+
+        //if(s.m_game_version != 2545)
+        //     continue;
+
         if (auto location = s.scan(data, size))
         {
             if (is_ascii(location, s.m_size))
@@ -118,7 +120,6 @@ int main(int argc, const char** argv)
         return 1;
 
     auto tunables = download_tunables();
-    // view_sigs(tunables); // unused?
 
     const std::filesystem::path file_path = argv[ARG_FILE_PATH];
     if (!std::filesystem::is_regular_file(file_path))
