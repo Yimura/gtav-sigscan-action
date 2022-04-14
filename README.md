@@ -1,8 +1,10 @@
-## gtav-sigscan
+# GTA V SigScan Action
 
-> Compares files (must be unpacked or a dump) against rockstar's sig database. If a sig is matched, it will tell you the string or bytes triggering the hit.
+Github Action to compare a binary against GTA V sig database.
 
 ## Authors
+
+### Sig Scan
 
 👤 **yubie**
 
@@ -12,5 +14,31 @@
 
 * Github: [@brunph](https://github.com/brunph)
 
+### Action
+
+👤 **Yimura**
+
+* Github: [@Yimura](https://github.com/Yimura)
+
 ## Usage
-Compile, add desired files/dumps into a "files" folder in the same directory as the built exe. Run to see results.
+
+```yml
+name: ci
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -- Download a binary
+
+      -
+        name: Setup GTA V Sig Scan
+        uses: yimura/gtav-sigscan-action@v0.1
+        with:
+          - file: ./YimMenu.dll
+```
