@@ -35,4 +35,4 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
-          tags: yimura/gtav-sigscanner:latest
+          tags: yimura/gtav-sigscan-action:latest
