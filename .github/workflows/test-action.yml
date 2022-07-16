@@ -1,0 +1,19 @@
+name: Test Local Github Action
+
+on:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      -
+        name: Test DLL for Detections
+        uses: ./
+        with:
+          file: ./test/detected.dll
