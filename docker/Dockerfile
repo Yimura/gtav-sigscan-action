@@ -13,4 +13,7 @@ RUN chmod +x ./sigscan
 
 WORKDIR /app
 
+COPY ./entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
 ENTRYPOINT sigscan $INPUT_FILE
