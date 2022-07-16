@@ -7,6 +7,9 @@ jobs:
   check_detections:
     runs-on: ubuntu-latest
     name: Check for detections in Binary
+    outputs:
+      is_detected: ${{ steps.detections.is_detected }}
+      detected_string: ${{ steps.detections.detected_string }}
     steps:
       -
         name: Checkout
@@ -24,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Notify of detections in Binary
     needs: check_detections
-    if: ${{ needs.check_detections.steps.detections.is_detected == 'true' }}
+    if: ${{ needs.check_detections.outputs.is_detected == 'true' }}
     steps:
       -
         name: Test Action Outputs
-        run: echo "${{ needs.check_detections.steps.detections.detected_string }}"
+        run: echo "${{ needs.check_detections.outputs.detected_string }}"
