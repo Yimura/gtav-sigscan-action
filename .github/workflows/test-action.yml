@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Check for detections in Binary
     outputs:
-      is_detected: ${{ steps.detections.is_detected }}
-      detected_string: ${{ steps.detections.detected_string }}
+      is_detected: ${{ steps.detections.outputs.is_detected }}
+      detected_string: ${{ steps.detections.outputs.detected_string }}
     steps:
       -
         name: Checkout
