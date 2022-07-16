@@ -88,8 +88,10 @@ rapidjson::Document download_tunables()
     return d;
 }
 
-void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std::string_view filename)
+bool loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std::string_view filename)
 {
+    bool is_detected = false;
+
     for (auto &bonus : doc["bonus"].GetArray())
     {
         auto values = bonus.GetArray();
@@ -100,6 +102,8 @@ void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std:
 
         if (auto location = s.scan(data, size))
         {
+            is_detected = true;
+
             if (is_ascii(location, s.m_size))
                 printf("(%s) \"%.*s\" (%u) (v%d) (%s) (~%.3f kb region)\n", filename.data(), s.m_size, location, s.m_size, s.m_game_version, s.m_protect_flag == PAGE_READONLY ? "PAGE_READONLY" : "PAGE_EXECUTE_READWRITE", s.m_region_size_estimate / 1000.0);
             else
@@ -111,23 +115,26 @@ void loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std:
             }
         }
     }
+
+    return is_detected;
 }
 
 constexpr auto ARG_FILE_PATH = 1;
 int main(int argc, const char** argv)
 {
     if (argc < 2)
-        return 1;
+        return -1;
 
     auto tunables = download_tunables();
 
     const std::filesystem::path file_path = argv[ARG_FILE_PATH];
     if (!std::filesystem::is_regular_file(file_path))
-        return 1;
+        return -1;
 
     std::ifstream i(file_path, std::ios::binary);
     std::vector<uint8_t> file_buffer = { std::istreambuf_iterator(i), std::istreambuf_iterator<char>() };
-    loop_bonus(tunables, file_buffer.data(), file_buffer.size(), file_path.filename().string());
+    if (loop_bonus(tunables, file_buffer.data(), file_buffer.size(), file_path.filename().string()))
+        return 1;
 
     return 0;
 }
