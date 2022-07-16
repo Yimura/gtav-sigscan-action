@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker:
+  check_detections:
     runs-on: ubuntu-latest
+    name: Check for detections in Binary
     steps:
       -
         name: Checkout
@@ -14,6 +15,17 @@ jobs:
           submodules: recursive
       -
         name: Test DLL for Detections
+        id: detections
         uses: ./
         with:
           file: ./test/detected.dll
+
+  notify_detection:
+    runs-on: ubuntu-latest
+    name: Notify of detections in Binary
+    needs: check_detections
+    if: ${{ needs.check_detections.steps.detections.is_detected == 'true' }}
+    steps:
+      -
+        name: Test Action Outputs
+        run: echo "${{ needs.check_detections.steps.detections.detected_string }}"
