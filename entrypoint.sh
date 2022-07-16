@@ -1,6 +1,6 @@
 #!/bin/bash
 
-out=$(sigscanner $1)
+out=$(sigscan $1)
 
 case $? in
   -1)
