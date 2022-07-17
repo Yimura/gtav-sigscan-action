@@ -8,7 +8,7 @@ function escape_output
   output="${output//$'\n'/'%0A'}"
   output="${output//$'\r'/'%0D'}"
 
-  echo output
+  echo "$output"
 }
 
 out=$(sigscan $1)
