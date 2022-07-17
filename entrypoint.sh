@@ -12,7 +12,6 @@ function escape_output
 }
 
 out=$(sigscan $1)
-escaped_out=$(escape_output $out)
 
 case $? in
   -1)
@@ -27,6 +26,8 @@ case $? in
     ;;
 
   1)
+    escaped_out=$(escape_output $out)
+
     echo "::warning title=Input file is detected!::$escaped_out"
     echo "::set-output name=is_detected::true"
     echo "::set-output name=detected_string::$escaped_out"
