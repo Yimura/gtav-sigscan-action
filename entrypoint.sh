@@ -1,6 +1,18 @@
 #!/bin/bash
 
+function escape_output
+{
+  local output=$1
+
+  output="${output//'%'/'%25'}"
+  output="${output//$'\n'/'%0A'}"
+  output="${output//$'\r'/'%0D'}"
+
+  echo output
+}
+
 out=$(sigscan $1)
+escaped_out=$(escape_output $out)
 
 case $? in
   -1)
@@ -15,8 +27,8 @@ case $? in
     ;;
 
   1)
-    echo "::warning title=Input file is detected!::$out"
+    echo "::warning title=Input file is detected!::$escaped_out"
     echo "::set-output name=is_detected::true"
-    echo "::set-output name=detected_string::$out"
+    echo "::set-output name=detected_string::$escaped_out"
     ;;
 esac
