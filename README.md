@@ -20,25 +20,41 @@ Github Action to compare a binary against GTA V sig database.
 
 * Github: [@Yimura](https://github.com/Yimura)
 
-## Usage
+## Example Usage
 
 ```yml
-name: ci
+name: Test Local Github Action
 
 on:
-  push:
-    branches:
-      - 'main'
+  workflow_dispatch:
 
 jobs:
-  docker:
+  check_detections:
     runs-on: ubuntu-latest
+    name: Check for detections in Binary
+    outputs:
+      is_detected: ${{ steps.detections.outputs.is_detected }}
+      detected_string: ${{ steps.detections.outputs.detected_string }}
     steps:
-      -- Download a binary
-
       -
-        name: Setup GTA V Sig Scan
-        uses: yimura/gtav-sigscan-action@v0.1
+        name: Checkout
+        uses: actions/checkout@v2
+        
+      -
+        name: Test DLL for Detections
+        id: detections
+        uses: ./
         with:
-          - file: ./YimMenu.dll
+          file: ./test/detected.dll
+
+  notify_detection:
+    runs-on: ubuntu-latest
+    name: Notify of detections in Binary
+    needs: check_detections
+    if: ${{ needs.check_detections.outputs.is_detected == 'true' }}
+    steps:
+      -
+        name: Test Action Outputs
+        run: echo "${{ needs.check_detections.outputs.detected_string }}"
+
 ```
