@@ -43,7 +43,7 @@ jobs:
       -
         name: Test DLL for Detections
         id: detections
-        uses: ./
+        uses: yimura/gtav-sigscan-action@v0.0.1
         with:
           file: ./test/detected.dll
 
@@ -56,5 +56,4 @@ jobs:
       -
         name: Test Action Outputs
         run: echo "${{ needs.check_detections.outputs.detected_string }}"
-
 ```
