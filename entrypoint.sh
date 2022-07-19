@@ -1,19 +1,14 @@
 #!/bin/bash
 
-function escape_output
-{
-  local output=$1
+output=$(sigscan $1)
+exit_code=$?
 
-  output="${output//'%'/'%25'}"
-  output="${output//$'\n'/'%0A'}"
-  output="${output//$'\r'/'%0D'}"
+# escape output because Github Actions are janky
+output="${output//'%'/'%25'}"
+output="${output//$'\n'/'%0A'}"
+output="${output//$'\r'/'%0D'}"
 
-  echo "$output"
-}
-
-out=$(sigscan $1)
-
-case $? in
+case $exit_code in
   -1)
     title=
     echo "::error title=Invalid action argument passed.::The file you passed as an argument does not exist or isn't a file."
@@ -26,10 +21,8 @@ case $? in
     ;;
 
   1)
-    escaped_out=$(escape_output $out)
-
-    echo "::warning title=Input file is detected!::$escaped_out"
+    echo "::warning title=Input file is detected!::$output"
     echo "::set-output name=is_detected::true"
-    echo "::set-output name=detected_string::$escaped_out"
+    echo "::set-output name=detected_string::$output"
     ;;
 esac
