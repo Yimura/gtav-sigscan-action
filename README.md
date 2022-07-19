@@ -43,7 +43,7 @@ jobs:
       -
         name: Test DLL for Detections
         id: detections
-        uses: yimura/gtav-sigscan-action@v0.0.1
+        uses: yimura/gtav-sigscan-action@v0.0.2
         with:
           file: ./test/detected.dll
 
