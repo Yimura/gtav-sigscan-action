@@ -1,6 +1,10 @@
 # action.yml
 name: 'GTA V Sig Scanner Action'
+author: 'Yimura'
 description: 'This action checks if your build contains bits that are detected by the GTA V sigscanner.'
+branding:
+  color: yellow
+  icon: alert-triangle
 inputs:
   file:
     description: 'The file to check against GTA V sig database.'
