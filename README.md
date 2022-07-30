@@ -39,11 +39,11 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-        
+
       -
         name: Test DLL for Detections
         id: detections
-        uses: yimura/gtav-sigscan-action@v0.0.2
+        uses: yimura/gtav-sigscan-action@v0.0.3
         with:
           file: ./test/detected.dll
 
