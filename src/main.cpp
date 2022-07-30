@@ -91,6 +91,8 @@ rapidjson::Document download_tunables()
 bool loop_bonus(rapidjson::Document &doc, uint8_t *data, size_t size, const std::string_view filename)
 {
     bool is_detected = false;
+    if (!doc.HasMember("bonus"))
+        return is_detected;
 
     for (auto &bonus : doc["bonus"].GetArray())
     {
